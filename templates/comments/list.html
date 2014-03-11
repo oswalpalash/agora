@@ -1,0 +1,14 @@
+Override
+<dl id="comments">
+  {% for comment in comment_list %}
+    <dt id="c{{ comment.id }}">
+        {{ comment.submit_date }} - {{ comment.name }}
+    </dt>
+    <dt> {{ comment.user_name }} </dt>
+    <dt> {{ comment.ip_address }} </dt>
+    <dt> {{ comment.user_email }} </dt>
+    <dd>
+        <p>{{ comment.user_url }}</p>
+    </dd>
+  {% endfor %}
+</dl>

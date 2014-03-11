@@ -1,0 +1,78 @@
+{% extends "base.djhtml" %}
+
+{% block navbar %}
+{% endblock %}
+
+{% block billboard %}
+<div id="billboard">
+    <div class="grid">
+        <div class="wrap center-align">
+            <h1>
+            Agora Octave enables <strong>rapid collaboration</strong> and
+            <strong>code&#8209;sharing</strong> for users of
+            <a href="http://octave.org">GNU Octave</a>.
+            </h1>
+            <!--<div id="login-box"></div>-->
+        </div>
+    </div>
+</div>
+<div id="billboard-below">
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="info-box" class="row">
+    <div class="span3">
+        <a href="{% url code %}">
+        <div class="center-align">
+            <img src="/static/img/browse.png" alt="" />
+            <h2>Browse code submissions</h2>
+        </div>
+        </a>
+        <p>
+            Some copy about how you can browse through the code until you
+            find what you want. They can be snippets or bundles. You can
+            contribute your own changes, maybe. You can even install them
+            as octave packages. More text to fill up line.
+        </p>
+    </div><div class="span3">
+        <a href="{% url snippet_new %}">
+            <div class="center-align">
+                <img src="/static/img/snippet.png" alt="" />
+                <h2>Post a snippet</h2>
+            </div>
+        </a>
+        <p>
+            Just want to post a quick snippet of code? Do it in the pastebin.
+            You don't even have to be registered. Though we'd need some sort
+            of spam-protection measures in that case. Plus, syntax highlighting!
+        </p>
+    </div><div class="span3">
+        <a href="{% url bundle_new %}">
+            <div class="center-align">
+                <img src="/static/img/upload.png" alt="" />
+                <h2>Share your code</h2>
+            </div>
+        </a>
+        <p>
+            For larger pieces of code, we have bundles. Mercurial integration,
+            select a license. Sharing made easy. Forge for installing packages,
+            eventually. Some more text just to fill up the space. Lorem ipsum,
+            etc. You do have to be signed up to upload something, though.
+        </p>
+    </div>
+</div>
+
+{% if not user.is_authenticated %}
+<div class="center-align">
+    <p><a href="{% url code %}" class="button large">Explore</a>
+    <a href="{% url login %}" class="button large login-link">
+        Login or register
+    </a></p>
+    <p>
+        You can sign up, if you want, won't share your email, not required, etc
+    </p>
+</div>
+{% endif %}
+
+{% endblock %}

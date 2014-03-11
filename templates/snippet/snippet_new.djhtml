@@ -1,0 +1,51 @@
+{% extends "snippet/base.djhtml" %}
+{% load i18n %}
+
+{% block title %}{% trans "New snippet" %}{% endblock %}
+
+{% block content %}
+    <div id="non-sidebar">
+        <h1>{% trans "Paste a new snippet" %}</h1>
+        <p class="hint">{% trans "Snippets provide a way to quickly share pieces of code, complete with line-numbering and syntax-highlighting." %} {% if not user.is_authenticated %}{% trans "Although registration is not required, only registered users can delete their own snippets after ending a session or have them linked to their profile. Additionally, snippets made by guests will not be publicly listed." %}{% endif %}</p>
+        {% include "snippet/snippet_form.djhtml" %}
+    </div><div id="sidebar">
+        <h2>Recent snippets</h2>
+        {% for snippet in recent_snippets %}
+        <hr />
+        <p>
+            <a href="{{ snippet.get_absolute_url }}">
+                {{ snippet.get_title }}
+            </a>
+            <br />
+            by
+            <a href="{{ snippet.author.get_absolute_url }}">
+                {{ snippet.author }}
+            </a>
+        </p>
+        {% endfor %}
+        <p class="right-float"><a href="{% url snippet_explore %}">
+            {% trans "View more" %} &raquo;
+        </a></p>
+    </div>
+{% endblock %}
+
+{% block script_footer %}
+<script type="text/javascript">
+jQuery(document).ready(function(){
+    {% if request.session.userprefs.display_all_lexer %}
+    $('#guess_lexer_btn').click(function(){
+        $.getJSON('{% url snippet_guess_lexer %}',
+            {'codestring': $('#id_content').val()},
+            function(data){
+                if(data.lexer == "unknown"){
+                    $('#guess_lexer_btn').css('color', 'red');
+                }else{
+                    $('#id_lexer').val(data.lexer);
+                    $('#guess_lexer_btn').css('color', 'inherit');
+                }
+            });
+    });
+    {% endif %}
+});
+</script>
+{% endblock %}

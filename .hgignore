@@ -1,0 +1,11 @@
+syntax: regexp
+.*\.pyc
+agora.sqlite
+agora.conf
+
+.*\.swp$
+.*\.swo$
+^Honza.*/
+fabfile.py
+.git
+tmp/bundles/*

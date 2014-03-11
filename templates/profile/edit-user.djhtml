@@ -1,0 +1,34 @@
+{% extends "base.djhtml" %}
+
+{% block breadcrubs %}
+Viewing your profile
+{% endblock %}
+
+{% block content %}
+<h1>Edit your account settings ({{ user }})</h1>
+<p class="hint">
+You can provide some extra optional information about yourself. We
+recommend that you provide us with a real name. If you do, it will be
+displayed next to all of your contributions instead of your Agora
+username.
+</p>
+<form method="post">
+    {% if form.non_field_errors %}
+    {{ form.non_field_errors }}
+    {% endif %}
+    {% csrf_token %}
+
+    {% for field in user_form %}
+    {% include "field.djhtml" %}
+    {% endfor %}
+
+    {% for field in profile_form %}
+    {% include "field.djhtml" %}
+    {% endfor %}
+
+    <div class="center-align">
+        <button type="submit" class="button large">Submit</button>
+        <button type="reset" class="button large">Reset</button>
+    </div>
+</form>
+{% endblock %}

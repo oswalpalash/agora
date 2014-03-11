@@ -1,0 +1,23 @@
+{% load i18n %}
+
+<form method="post" action="" class="snippetform"
+    enctype="multipart/form-data">
+    {% if form.non_field_errors %}
+    <div class="errors">
+        {{ form.non_field_errors }}
+    </div>
+    {% endif %}
+
+    {% csrf_token %}
+
+    {% for field in form %}
+    {% if not field.is_hidden %}
+    {% include "simple_field.djhtml" %}
+    {% endif %}
+    {% endfor %}
+
+    <br />
+    <div class="center-align">
+        <button type="submit" class="button large">{% trans "Save bundle" %}</button>
+    </div>
+</form>

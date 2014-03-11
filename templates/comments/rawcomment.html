@@ -1,0 +1,29 @@
+{% load comments %}
+{% load mptt_tags %}
+<div id = "comment">
+
+{% render_comment_form for object %}
+
+{% get_comment_list for object as comments %}
+
+{% if comments %}
+{% recursetree comments %}
+  <a name = "c{{ node.id }}"> </a>
+ <!-- {{ node.id }} -->
+  <div class = "comment-node">
+
+ <p class = "comment-bar"><a href = "{{ object.get_absolute_url }}#c{{ node.id }}"><strong>{{ node.user }} </strong>  ·    {{ node.submit_date|timesince }}  ago  </a> </p>
+  <p class = "comment"><p class = "comment-body"> {{ node.comment }} </p>
+  {% render_comment_form for object %}
+</div>
+  {# recursion tree logic #}
+  {% if not node.is_leaf_node %}
+  <div class = "comment-node-child">
+  {{ children }}
+</div>
+  {% endif %}
+
+{% endrecursetree %}
+{% endif%}
+
+</div>

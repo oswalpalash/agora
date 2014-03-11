@@ -1,0 +1,31 @@
+{% load comments i18n %}
+
+
+<form action="{% comment_form_target %}" method="post">
+  {% csrf_token %}
+    {{ form.object_pk }}
+    {{ form.content_type }}
+    {{ form.timestamp }}
+    {{ form.security_hash }}
+    {# if it is has a parent #}
+    <input type="hidden" name="next" value="{{ request.get_full_path }}" />
+    {% if node.id %}
+        <input type="hidden" name="parent" id="parent_id" value="{{ node.id }}" />
+        <input type = 'button' value = "Reply" onClick= "$(this).ShowCommentForm({{ node.id }})" id = "{{ node.id }}-button"
+        class = "reply-button"/>
+
+    {% endif %}
+        <!-- I have used node id over here so that I can show/hide comment field -->
+        <div class = "comment-box" style="{% if node.id %}display:none {% else %} display:block {%endif%}" id = "{{ node.id }}"   >
+        <h4>
+        {%if node.id%}
+        Reply:
+        {%else%} Comment:
+        {%endif%}
+        </h4>
+        {{form.comment}}
+
+        <br/>
+        <input type="submit" value = "Submit" class = 'reply-button' >
+        </div>
+    </form>

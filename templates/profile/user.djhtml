@@ -1,0 +1,62 @@
+{% extends "base.djhtml" %}
+
+{% block breadcrumbs %}
+Viewing profile: {{ profile.user }}
+{% endblock %}
+
+
+{% block content %}
+<div id="non-sidebar">
+
+<h1>{{ profile.user }}'s profile</h1>
+
+<dl>
+    {% if profile.user.first_name or profile.user.last_name %}
+    <dt>Name:</dt>
+    <dd>{{ name|default:"N/A" }}</dd>
+    {% endif %}
+
+    <dt>Preferred license:</dt>
+    <dd>{{ profile.preferred_license }}</dd>
+
+    <dt>Syntax highlighting style:</dt>
+    <dd>{{ profile.pygments_style }}</dd>
+</dl>
+
+{% if profile.interests %}
+<h2>Interests</h2>
+
+<p>{{ profile.interests }}</p>
+{% endif %}
+
+{% if profile.blurb %}
+<h2>About {{ name }}</h2>
+
+<p>{{ profile.blurb }}</p>
+{% endif %}
+</div><div id="sidebar">
+    <h2>Contributions</h2>
+
+    <h3><a href="{% url bundle_new %}">Bundles</a></h3>
+    {% if bundles %}
+    <ul>
+        {% for bundle in bundles %}
+        <li><a href="{{ bundle.get_absolute_url }}">{{ bundle }}</a></li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>{{ name }} does not have any bundles.</p>
+    {% endif %}
+
+    <h3><a href="{% url snippet_new %}">Snippets</a></h3>
+    {% if snippets %}
+    <ul>
+        {% for snippet in snippets %}
+        <li><a href="{{ snippet.get_absolute_url }}">{{ snippet }}</a></li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>{{ name }} does not have any snippets.</p>
+    {% endif %}
+</div>
+{% endblock %}

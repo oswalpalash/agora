@@ -1,0 +1,46 @@
+# HG changeset patch
+# User Palash Oswal <oswalpalash@gmail.com>
+# Date 1394556522 -19800
+#      Tue Mar 11 22:18:42 2014 +0530
+# Node ID 1d63a76e0258e3b7fed4c41549ce15befce0ce1d
+# Parent  6f285552a9d0bd7b3a9f22d8bb51e629c1aeea94
+Temporary Directory Fix Bundle Upload mkdtemp()
+
+diff -r 6f285552a9d0 -r 1d63a76e0258 apps/bundle/views.py
+--- a/apps/bundle/views.py	Thu Jan 16 10:59:05 2014 -0500
++++ b/apps/bundle/views.py	Tue Mar 11 22:18:42 2014 +0530
+@@ -1,6 +1,7 @@
+ from __future__ import with_statement
+ 
+ import os
++import tempfile
+ 
+ from django.shortcuts import get_object_or_404, render, redirect
+ from django.contrib.auth.decorators import login_required
+@@ -12,7 +13,7 @@
+ from apps.bundle.tasks import handle_bundle_upload
+ from apps.pygments_style.models import PygmentsStyle
+ 
+-
+
+ def detail(request, user, bundle, file=None, version=0):
+     bundle = get_object_or_404(Bundle, uploader__username=user, name=bundle)
+     # If the version is not set, use the latest version
+@@ -58,7 +59,7 @@
+ 
+             bundle.file_name = file.name
+             bundle.save()
+-            bundle_path = bundle.get_temp_path()
++            bundle_path = bundle.mkdtemp()
+			 os.chmod(bundle_path,0777)
+             with open(bundle_path, 'wb+') as destination:
+                 for chunk in request.FILES.get('file', []):
+@@ -107,7 +108,7 @@
+                 bundle.file_name = file.name
+                 bundle.latest_version += 1
+                 bundle.save()
+-                bundle_path = bundle.get_temp_path()
++                bundle_path = bundle.mkdtemp()
+ 
+                 with open(bundle_path, 'wb+') as destination:
+                     for chunk in request.FILES.get('file', []):

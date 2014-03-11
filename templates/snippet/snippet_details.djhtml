@@ -1,0 +1,183 @@
+{% extends "snippet/base.djhtml" %}
+{% load mptt_tags %}
+{% load i18n %}
+
+{% block extrahead %}
+{% if request.session.userprefs %}
+<style type="text/css" media="all">
+  .highlight {
+  {# FIXME: Thats stupid #}
+  {% ifnotequal request.session.userprefs.font_family "None" %}
+  font-family: {{ request.session.userprefs.font_family }} !important;
+  {% endifnotequal %}
+  {% ifnotequal request.session.userprefs.font_size "None" %}
+  font-size: {{ request.session.userprefs.font_size }}px !important;
+  {% endifnotequal %}
+  {% ifnotequal request.session.userprefs.line_height "None" %}
+  line-height: {{ request.session.userprefs.line_height }}px !important;
+  {% endifnotequal %}
+  }
+</style>
+{% endif %}
+{% endblock %}
+
+{% block title %}
+Viewing snippet — {{ snippet.get_title }}
+{% endblock title %}
+
+{% block headline %}
+<h1>
+  {% trans "Snippet" %} #{{ snippet.pk }}
+  {% if snippet.parent_id %}
+  {% blocktrans with snippet.parent.get_absolute_url as parent_url and snippet.parent.id as parent_id %}
+  (Copy of <a href="{{ parent_url }}">snippet #{{ parent_id }}</a>)
+  {% endblocktrans %}
+  {% endif %}
+  <span class="date">
+    {{ snippet.published|date:_("DATETIME_FORMAT") }} ({% trans "UTC" %})
+  </span>
+</h1>
+{% endblock headline %}
+
+{% load snippet_tags %}
+
+{% block content %}
+<div id="non-sidebar">
+    <div id="diff">
+    </div>
+
+    <h1>{{ snippet.get_title }}</h1>
+    <div class="snippet-options">
+        <abbr title="{% trans "Time to live" %}">
+              TTL:
+        </abbr>
+        {{ snippet.expires|timeuntil  }}
+        &mdash;
+        {% if snippet.pk|in_list:request.session.snippet_list %}
+        <a onclick="return confirm('{% trans "Really delete this snippet?" %}')"
+           href="{% url snippet_delete snippet.secret_id %}">
+            Delete this snippet
+        </a>
+        &mdash;
+        {% endif %}
+        {% include "snippet/snippet_options.djhtml" %}
+        <div>
+            Author:
+            {% if snippet.author %}
+            <a href="{{ snippet.author.get_absolute_url }}">
+            {{ snippet.author }}
+            </a>
+            {% else %}
+            anonymous
+            {% endif %}
+            &mdash;
+            Language: {{ language }}
+            &mdash;
+            Number of views: {{ snippet.num_views }}
+            <strong>
+            {%  load ratings %}
+            Total Votes: {{ snippet.rating.votes }}
+            Rating: {{ score }}
+            </strong>
+        </div>
+    </div><!-- closes .snippet-options -->
+    <br />
+
+    {% include "snippet/snippet_box.djhtml" with lines=snippet.content_splitted %}
+
+    <br />
+    {% include "snippet/rate_form.djhtml" %}
+    <br/>
+    <h2> Comments for this snippet: </h2>{% with snippet as object %}{% include "comments/rawcomment.html" %}{% endwith %}.
+
+    <h2 id="revise">{% trans "Revise this snippet" %}</h2>
+
+    {% include "snippet/snippet_form.djhtml" %}
+</div><div id="sidebar">
+    <h2>{% trans "History" %}</h2>
+{% if user.is_authenticated %}
+    {% if no_descendants %}
+        <p>{% trans "This snippet has no children!" %}</p>
+        <p>
+            <a href="#revise">
+            {% trans "Make one" %} &raquo;
+            </a>
+        </p>
+    {% else %}
+    <form method="get" id="diffform" action="{% url snippet_diff %}">
+      <div id="snippet-history">
+        {% for tree_item,structure in tree|tree_info %}
+        {% if structure.new_level %}
+        <ul>
+          <li>
+            {% else %}
+          </li>
+          <li>
+            {% endif %}
+            <div>
+              <span class="diff">
+                <input type="radio" name="a"
+                       value="{{ tree_item.id }}"
+                       {% ifequal tree_item.id snippet.parent_id %}
+                       checked="checked"
+                       {% endifequal %}/>
+                <input type="radio"
+                       name="b"
+                       value="{{ tree_item.id }}"
+                       {% ifequal snippet tree_item %}
+                       checked="checked"
+                       {% endifequal %}/>
+              </span>
+              {% ifequal snippet tree_item %}
+                <strong>{{ tree_item.get_title }}</strong>
+              {% else %}
+                <a href="{{ tree_item.get_absolute_url }}">
+                    {{ tree_item.get_title }}
+                </a>
+              {% endifequal %}
+            </div><!-- closes the div surrounding the .diff span -->
+            {% for level in structure.closed_levels %}
+          </li>
+        </ul>
+        {% endfor %}
+        {% endfor %}
+
+           <div class="submit">
+        <input type="submit" value="{% trans "Compare" %}"/>
+
+
+          </div><!-- closes the .tree div -->
+      <br />
+
+      </div><!-- closes the .submit div -->
+    </form>
+
+
+
+    {% endif %}
+    <br />
+    <h2>{% trans "Options" %}</h2>
+    <a href="{% url snippet_details_raw snippet.secret_id %}">
+       {% trans "View raw" %}
+     </a>
+{% else %}
+     <h4>{% trans "Login to see revision history" %}</h4>
+{% endif %}
+
+
+
+
+
+</div><!-- closes the .sidebar div -->
+{% endblock %}
+
+
+
+
+
+
+{% block script_footer %}
+<script type="text/javascript">
+{%include "snippet/snippet_details.js" %}
+</script>
+{% endblock script_footer %}

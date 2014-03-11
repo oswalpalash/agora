@@ -1,0 +1,12 @@
+<div id = "radio_votes">
+<form action = "rating/process/"  method = "POST" id="rate_form">
+{% csrf_token%}
+<h3 id ="rate_label">Rate this Snippet:</h3>
+<ul>
+{% for x in "12345" %}
+<li><label for="id_Rate_{{ forloop.counter }}"><input name="Rate" type="radio" class="rate_radio" value="{{ forloop.counter }}" id="id_Rate_0"> {{ forloop.counter }}</label></li>
+{% endfor %}
+</ul>
+<input type="hidden" name="next" value="{{ request.get_full_path }}" />
+</form>
+</div>

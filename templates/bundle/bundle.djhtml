@@ -1,0 +1,124 @@
+{% extends "bundle/base.djhtml" %}
+
+
+{% load mptt_tags %}
+{% load sizefieldtags %}
+
+
+{% block section %}
+<a href="{{ bundle.get_absolute_url }}">{{ bundle }}</a>
+by <a href="{{ bundle.uploader.get_absolute_url }}">{{ bundle.uploader }}</a>
+(version {{ this_version }})
+{% if file %}
+&raquo;
+{{ file }}
+{% endif %}
+
+
+{% endblock %}
+
+{% block title %}
+{% if file %}
+{{ file }} in
+{% endif %}
+{{ bundle }} by {{ bundle.uploader }}
+{% endblock %}
+
+
+{% block content %}
+{% if request.user == bundle.uploader %}
+<div class="right-float">
+<h2><a href="{% url bundle_edit request.user.username bundle.name %}">Edit this bundle</a></h2>
+</div>
+{% endif %}
+<h1>
+<a href="{{ bundle.get_absolute_url }}">{{ bundle.name }}</a>
+by
+<a href="{{ bundle.uploader.get_absolute_url }}">{{ bundle.uploader }}</a>
+(version {{ this_version }})
+</h1>
+
+{% if not bundle.done_uploading %}
+<p class="hint">This bundle is being processed.</p>
+{% else %}
+{% if files %}
+<div id="bundle-filebrowser">
+<ul>
+    {% recursetree files %}
+        <li class="{% if not node.is_leaf_node %}bundle-folder {% endif %}
+        {% if node == file %}selected{% endif %}">
+            {% if node.is_leaf_node %}
+            <a href="{{ node.get_absolute_url }}">{{ node.name }}</a>
+            {% else %}
+            {{ node.name }}
+            {% endif %}
+            {% if not node.is_leaf_node %}
+                <ul>
+                    {{ children }}
+                </ul>
+            {% endif %}
+        </li>
+    {% endrecursetree %}
+</ul>
+</div>
+
+<div id="bundle-file">
+    {% if file %}
+    <h2>{{ file.full_path }} <small>{{ file.file_size|filesize }}</small></h2>
+
+    {% if file.code %}
+    <p>
+    {% include "snippet/snippet_options.djhtml" %}
+    </p>
+    {% include "snippet/snippet_box.djhtml" with lines=file.get_lines %}
+    {% else %}
+    <p>This file is a binary file.</p>
+    <p><a href="#">Download file (feature not yet available)</a></p>
+    {% endif %}
+    {% else %}
+    <h2>Description</h2>
+    {% if bundle.description %}
+    <p>{{ bundle.description }}</p>
+    {% else %}
+    {% if bundle.description_file %}
+    <p class="bundle-description">{{ bundle.description_file.code|safe }}</p>
+    {% else %}
+    <p>N/A</p>
+    {% endif %}
+    {% endif %}
+
+    {% if bundle.description %}
+    <p><strong>License:</strong> {{ bundle.free_license }}</p>
+    <p><strong>Latest version number:</strong> {{ bundle.latest_version }}</p>
+    {% endif %}
+    {% if previous_versions %}
+    <h3>Versions</h3>
+    <ul>
+    {% for version in previous_versions reversed %}
+        <li>
+            <a href="{{ bundle.get_absolute_url }}/{{ version }}">
+                {% if version == this_version %}<strong>{% endif %}
+                Version {{ version }}
+                {% if version == this_version %}</strong>{% endif %}
+            </a> :: <a href="{% url bundle_download bundle.uploader.username bundle.name version %}">Download &raquo;</a>
+        </li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+    {% endif %}
+    <h2 class = "names"> Comments for this bundle: </h2>
+    {% with bundle as object %}
+    {% include "comments/rawcomment.html" %}{% endwith %}.
+
+</div>
+{% else %}
+<p>
+    No files in this bundle!
+    {% if request.user == bundle.uploader %}
+    Upload something? (Not yet available)
+    {% endif %}
+</p>
+{% endif %}
+{% endif %}
+
+{% endblock %}

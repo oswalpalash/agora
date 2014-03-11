@@ -1,0 +1,34 @@
+{% extends "base.djhtml" %}
+
+{% block content %}
+<h1>Login</h1>
+{% if user.is_authenticated %}
+<p>
+  You're already logged in as 
+  <a href="{% url agora.apps.profile.views.showprofile user %}">
+    {{user.username}}
+  </a>.
+</p>
+<p>
+  (<a href="{% url auth_logout %}">logout</a>)
+</p>
+
+{% else %}
+
+<form method="post" action="">
+  {% csrf_token %}
+  <table>
+    {{ form }}
+  </table>
+  <input type="submit" value="Log in" />
+  <input type="hidden" name="next" value="{{ next }}" />
+</form>
+
+<p>
+  Forgot password? <a href="{% url auth_password_reset %}">Reset it</a>!
+</p>
+<p>
+  No login name? <a href="{% url registration_register %}">Register</a>!
+</p>
+{% endif %}
+{% endblock %}

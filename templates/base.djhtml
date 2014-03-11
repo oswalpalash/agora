@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Language" content="en-us" />
+
+    <title>Agora Octave &mdash;
+      {% block title %}
+      Free your numbers!
+      {% endblock %}
+    </title>
+
+    <meta name="Copyright" content="Agora Octave is free software
+    under the Affero General Public License version 3 as published by
+    the Free Software Foundation, or at your option, any later
+    version" />
+
+    <meta name="keywords" content="Octave, mathematics, numerical
+    analysis, open source, free software, Agora" />
+
+    <meta name="description" content="Agora Octave is a website that
+    enables collaboration with Octave-related personal projects and
+    code" />
+
+    {% if compile_less %}
+    <link href="/static/css/agora.css" rel="stylesheet" type="text/css" />
+    {% else %}
+    <link href="/static/css/imports.less"
+          rel="stylesheet/less" type="text/css" media="screen" />
+
+    <script src="/static/js/less.min.js" type="text/javascript"></script>
+    {% endif %}
+
+    {% block extrahead %}{% endblock %}
+  </head>
+
+  <body id="{% block sectionid %}generic{% endblock %}"
+        class="{% block coltype %}default{% endblock %}">
+
+  <div id="container">
+    <div id="header">
+      <div class="wrap">
+        <a href="{% url home %}">
+          <img src="/static/img/logo.png" alt="Agora Octave" class="logo" />
+        </a>
+        <ul class="nav">
+          <li><a href="{% url code %}" id="code-icon">Code</a></li>
+          <li><a href="{% url discuss %}" id="discuss-icon">Discuss</a></li>
+          <li><a href="{% url help %}" id="help-icon">Help</a></li>
+          <li><a href="{% url about %}" id="about-icon">About</a></li>
+        </ul>
+      </div>
+    </div>
+    <!-- END Header -->
+    {% block billboard %}<div id="header-below"></div>{% endblock %}
+    <div id="content">
+      {% block navbar %}
+      <div id="breadcrumbs">
+        <div class="right-float">
+          {% block login_breadcrumbs %}
+          {% if user.is_authenticated %}
+            <a href="{% url auth_logout %}">Logout</a>
+            ::
+            <a href="{% url edit_profile %}">Account settings</a>
+            ::
+            <a href="{% url show_profile user %}">View your profile ({{ user }})</a>
+          {% else %}
+            <a href="{% url login %}?next={{ request.path }}" class="login-link">
+                Login or register
+            </a>
+          {% endif %}
+          {% endblock %}
+        </div>
+        <div>
+          {% block breadcrumbs %}
+          &nbsp;
+          {% endblock %}
+        </div>
+      </div>
+      {% endblock %}
+
+      {% block content %}
+      {% endblock %}
+    </div>
+    <!-- END #content -->
+  </div>
+  <!-- END #container -->
+  <div id="footer">
+    <p id="copyright">
+      &copy; 1998-{% now "Y"%}
+      <a href="http://www.gnu.org/software/octave/acknowledgments.html">
+        John W. Eaton and others</a> unless otherwise noted.
+        ::
+        Help us build this site! Clone the
+        <a href="http://inversethought.com/hg/hgwebdir.cgi/agora/">source</a>
+        and start contributing. :: About
+    </p>
+  </div>
+  <!-- END #footer -->
+  {% block login_form %}
+  <div id="login-popup" class="hidden">
+      <div id="login-form">
+          {% include "login_form.djhtml" %}
+      </div>
+  </div>
+  {% endblock %}
+    <script src="/static/js/jquery.min.js" type="text/javascript"></script>
+    <script src="/static/js/agora.js" type="text/javascript"></script>
+    {% block script_footer %}
+    {% endblock %}
+  </body>
+</html>

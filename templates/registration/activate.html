@@ -1,0 +1,23 @@
+{% extends "base.djhtml" %}
+
+{% block boxtitle %}
+Account activation
+{% endblock %}
+
+{% block boxcontents %}
+
+{% if account %}
+<p>
+  Account successfully activated. 
+  <a href="{% url auth_login %}">Click here</a> to log in.
+</p>
+
+{% else %}
+
+<p>
+  Account activation failed.
+</p>
+
+{% endif %}
+
+{% endblock %}
